@@ -90,41 +90,15 @@ class _FireTankDetailsPageState extends State<FireTankDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'ประวัติการตรวจสอบ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            isTechnicianView ? 'ช่างเทคนิค' : 'ผู้ใช้ทั่วไป',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          Switch(
-                            value: isTechnicianView,
-                            onChanged: (bool value) {
-                              setState(() {
-                                isTechnicianView = value;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+                  const Text(
+                    'ประวัติการตรวจสอบ',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   const SizedBox(height: 10),
                   FutureBuilder<QuerySnapshot>(
                     future: FirebaseFirestore.instance
                         .collection('form_checks')
                         .where('tank_id', isEqualTo: widget.tankId)
-                        .where('user_type',
-                            isEqualTo: isTechnicianView
-                                ? 'ช่างเทคนิค'
-                                : 'ผู้ใช้ทั่วไป')
                         .orderBy('date_checked', descending: true)
                         .orderBy('time_checked', descending: true)
                         .get(),
@@ -154,13 +128,11 @@ class _FireTankDetailsPageState extends State<FireTankDetailsPage> {
                               checkData['date_checked'] ?? 'ไม่มีข้อมูล';
                           final timeChecked =
                               checkData['time_checked'] ?? 'ไม่มีข้อมูล';
-                          /*final inspector =
-                              checkData['inspector'] ?? 'ไม่มีข้อมูล';*/
+                          final inspector =
+                              checkData['inspector'] ?? 'ไม่มีข้อมูล';
 
                           // ตรวจสอบสถานะตาม user_type และ isTechnicianView
-                          final status = isTechnicianView
-                              ? checkData['status_technician'] ?? 'ไม่มีข้อมูล'
-                              : checkData['status'] ?? 'ไม่มีข้อมูล';
+                          final status = checkData['status'] ?? 'ไม่มีข้อมูล';
 
                           return Container(
                             margin: const EdgeInsets.symmetric(vertical: 8),
@@ -174,8 +146,8 @@ class _FireTankDetailsPageState extends State<FireTankDetailsPage> {
                               children: [
                                 Text('วันที่: $dateChecked $timeChecked'),
                                 const SizedBox(height: 5),
-                                /*Text('ผู้ตรวจสอบ: $inspector'),
-                                const SizedBox(height: 5),*/
+                                Text('ผู้ตรวจสอบ: $inspector'),
+                                const SizedBox(height: 5),
                                 Row(
                                   children: [
                                     const Text('สถานะ: '),

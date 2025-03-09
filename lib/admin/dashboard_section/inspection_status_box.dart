@@ -21,7 +21,7 @@ class InspectionStatusBox extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 10),
-          const Text('การตรวจสอบ(ผู้ใช้ทั่วไป)',
+          const Text('การตรวจสอบผู้ใช้ทั่วไปในเดือนนี้ ',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
           buildStatusRow('ตรวจสอบแล้ว', checkedCount, Colors.green),

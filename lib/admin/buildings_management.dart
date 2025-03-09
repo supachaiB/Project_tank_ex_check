@@ -76,16 +76,10 @@ class _BuildingManagementScreenState extends State<BuildingManagementScreen> {
       _floorsController.text = buildingData['totalFloors'];
       _descriptionController.text = buildingData['description'];
 
-      setState(() {
-        _isFormVisible = true;
-      });
-
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(
-            'แก้ไขข้อมูลอาคาร',
-          ),
+          title: Text('แก้ไขข้อมูลอาคาร'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -124,19 +118,60 @@ class _BuildingManagementScreenState extends State<BuildingManagementScreen> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text('บันทึกการแก้ไข'),
+              child: Text('แก้ไข'),
             ),
             TextButton(
-              onPressed: () async {
-                await buildingRef.delete();
-                Navigator.of(context).pop();
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด Dialog หรือหน้าปัจจุบัน
               },
-              child: Text('ลบอาคาร'),
+              child: Text('ยกเลิก'),
             ),
           ],
         ),
       );
     }
+  }
+
+  void _showAddBuildingDialog() {
+    _clearInputs();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('เพิ่มอาคาร'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(labelText: 'ชื่ออาคาร'),
+            ),
+            TextField(
+              controller: _floorsController,
+              decoration: InputDecoration(labelText: 'จำนวนชั้นทั้งหมด'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _descriptionController,
+              decoration: InputDecoration(labelText: 'รายละเอียด'),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () async {
+              await _addBuilding();
+              Navigator.of(context).pop();
+            },
+            child: Text('บันทึก'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('ยกเลิก'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -257,14 +292,10 @@ class _BuildingManagementScreenState extends State<BuildingManagementScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _isFormVisible = !_isFormVisible;
-          });
-        },
+        onPressed: _showAddBuildingDialog, // เรียกฟังก์ชันเปิดฟอร์มปกติ
+
         backgroundColor: Colors.blueAccent,
-        child:
-            Icon(_isFormVisible ? Icons.close : Icons.add, color: Colors.white),
+        child: Icon(Icons.add, color: Colors.white),
       ),
     );
   }

@@ -11,6 +11,9 @@ import 'user/form_check.dart';
 import 'admin/Fire_tank_management.dart';
 import 'admin/buildings_management.dart';
 import 'admin/fire_tank_types.dart';
+import 'admin/admin_damage.dart';
+import 'admin/settings.dart';
+import 'technician/form_tech.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +64,25 @@ class MyApp extends StatelessWidget {
           );
         }
 
+        if (uri.path == '/Tech') {
+          final tankId = uri.queryParameters['tankId'];
+          if (tankId == null) {
+            // กรณีไม่มี tankId ส่งกลับข้อความแสดงข้อผิดพลาด
+            return MaterialPageRoute(
+              builder: (context) => Scaffold(
+                appBar: AppBar(title: const Text('ข้อผิดพลาด')),
+                body: const Center(
+                  child: Text('Tank ID ไม่ถูกต้องหรือไม่ได้ระบุ.'),
+                ),
+              ),
+            );
+          }
+          // ส่ง tankId ไปยังหน้า FormCheckPage
+          return MaterialPageRoute(
+            builder: (context) => FormTechCheckPage(tankId: tankId),
+          );
+        }
+
         // จัดการเส้นทางอื่น ๆ
         switch (uri.path) {
           case '/firetankstatus':
@@ -80,6 +102,10 @@ class MyApp extends StatelessWidget {
           case '/FireTankStatusPage':
             return MaterialPageRoute(
                 builder: (context) => FireTankStatusPage());
+          case '/AdminReport':
+            return MaterialPageRoute(builder: (context) => AdminReportPage());
+          case '/Settings':
+            return MaterialPageRoute(builder: (context) => SettingsPage());
           default:
             // เส้นทางเริ่มต้น
             return MaterialPageRoute(

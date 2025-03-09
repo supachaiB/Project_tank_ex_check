@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firecheck_setup/admin/dashboard_section/damage_info_section.dart';
+//import 'package:firecheck_setup/admin/dashboard_section/damage_info_section.dart';
 import 'package:firecheck_setup/admin/inspection_section/scheduleBox.dart';
 import 'package:firecheck_setup/admin/fire_tank_status.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -197,8 +197,6 @@ class _DashboardPageState extends State<DashboardPage> {
                               brokenCount: brokenTechnicianCount,
                               repairCount: repairTechnicianCount,
                             )),
-                            const SizedBox(width: 16),
-                            Expanded(child: DamageInfoSection()),
                           ],
                         );
                       }
@@ -235,7 +233,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  'สถานะการตรวจสอบ (ผู้ใช้ทั่วไป)',
+                                  'การตรวจสอบผู้ใช้ทั่วไปในเดือนนี้',
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
@@ -311,7 +309,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  'สถานะการตรวจสอบ (ช่างเทคนิค)',
+                                  'การตรวจสอบช่างเทคนิคในไตรมาสนี้',
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold),
@@ -426,13 +424,6 @@ Widget _buildDrawer(BuildContext context) {
             Navigator.pushNamed(context, '/');
           },
         ),
-        /*ListTile(
-            leading: const Icon(Icons.check_circle),
-            title: const Text('ตรวจสอบสถานะถัง'),
-            onTap: () {
-              Navigator.pushNamed(context, '/firetankstatus');
-            },
-          ),*/
         ListTile(
           leading: const Icon(Icons.history),
           title: const Text('ประวัติการตรวจสอบ'),
@@ -441,26 +432,59 @@ Widget _buildDrawer(BuildContext context) {
           },
         ),
         ListTile(
-          leading: const Icon(Icons.build),
+          leading: const Icon(Icons.report_problem),
+          title: const Text('แจ้งซ่อม'),
+          onTap: () {
+            Navigator.pushNamed(context, '/AdminReport');
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.update), // อัปเดตสถานะ
+          title: const Text('การอัปเดตสถานะ'),
+        ),
+        ListTile(
+          leading: const Icon(Icons.manage_accounts), // จัดการผู้ใช้งาน
+          title: const Text('จัดการผู้ใช้งาน'),
+        ),
+        ListTile(
+          leading: const Icon(Icons.build), // จัดการถังดับเพลิง
           title: const Text('การจัดการถังดับเพลิง'),
           onTap: () {
             Navigator.pushNamed(context, '/fire_tank_management');
           },
         ),
         ListTile(
-          leading: const Icon(Icons.apartment),
+          leading: const Icon(Icons.apartment), // จัดการอาคาร
           title: const Text('การจัดการอาคาร'),
           onTap: () {
             Navigator.pushNamed(context, '/BuildingManagement');
           },
         ),
         ListTile(
-          leading: const Icon(Icons.local_fire_department),
+          leading: const Icon(Icons.local_fire_department), // ประเภทถังดับเพลิง
           title: const Text('ประเภทถังดับเพลิง'),
           onTap: () {
             Navigator.pushNamed(context, '/FireTankTypes');
           },
         ),
+        ListTile(
+            leading: const Icon(Icons.settings), // ตั้งค่า
+            title: const Text('ตั้งค่า'),
+            onTap: () {
+              Navigator.pushNamed(context, '/Settings');
+            }),
+        ListTile(
+          leading: const Icon(Icons.logout), // ออกจากระบบ
+          title: const Text('ออกจากระบบ'),
+        ),
+
+        /*ListTile(
+            leading: const Icon(Icons.check_circle),
+            title: const Text('ตรวจสอบสถานะถัง'),
+            onTap: () {
+              Navigator.pushNamed(context, '/firetankstatus');
+            },
+          ),*/
         const Divider(),
       ],
     ),

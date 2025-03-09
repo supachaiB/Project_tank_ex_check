@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // สำหรับฟอร์แมตวันที่
 import 'package:cloud_firestore/cloud_firestore.dart'; // สำหรับ Firestore
-import 'firetank_details.dart'; // นำเข้าไฟล์ที่แสดงประวัติการตรวจสอบ
+//import 'firetank_details.dart'; // นำเข้าไฟล์ที่แสดงประวัติการตรวจสอบ
 import 'dart:convert'; // สำหรับการแปลง Base64
 import 'dart:typed_data'; // สำหรับ Uint8List
 //import 'package:url_launcher/url_launcher.dart';
+import 'dashboardTech.dart';
 
-class FormCheckPage extends StatefulWidget {
+class FormTechCheckPage extends StatefulWidget {
   final String tankId;
 
-  const FormCheckPage({Key? key, required this.tankId}) : super(key: key);
+  const FormTechCheckPage({Key? key, required this.tankId}) : super(key: key);
 
   @override
-  _FormCheckPageState createState() => _FormCheckPageState();
+  _FormTechCheckPageState createState() => _FormTechCheckPageState();
 }
 
-class _FormCheckPageState extends State<FormCheckPage> {
+class _FormTechCheckPageState extends State<FormTechCheckPage> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _remarkController = TextEditingController();
@@ -325,7 +326,7 @@ class _FormCheckPageState extends State<FormCheckPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'User Form',
+            'Technician Form',
             style: TextStyle(fontSize: fontSize * 1.2),
           ),
           automaticallyImplyLeading: false, // ไม่แสดงลูกศรด้านซ้าย
@@ -447,7 +448,7 @@ class _FormCheckPageState extends State<FormCheckPage> {
                                 Expanded(
                                     child:
                                         Container()), // พื้นที่ว่างให้ปุ่มอยู่ขวาสุด
-                                TextButton(
+                                /*TextButton(
                                   onPressed: () {
                                     Navigator.push(
                                       context,
@@ -463,7 +464,7 @@ class _FormCheckPageState extends State<FormCheckPage> {
                                     'ดูทั้งหมด',
                                     style: TextStyle(fontSize: fontSize),
                                   ),
-                                ),
+                                ),*/
                               ],
                             );
                           } else {
@@ -974,55 +975,44 @@ class _FormCheckPageState extends State<FormCheckPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
-
-              // เพิ่มกล่องใหม่สำหรับ YouTube link
-              /*Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'ความรู้การระงับอัคคีภัยเบื้องต้น',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      SizedBox(height: 5),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrl(Uri.parse(
-                              'https://www.youtube.com/watch?v=JTUcb7CNP60'));
-                        },
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              8), // ทำให้ภาพโค้งมนเล็กน้อย
-                          child: Image.asset(
-                            'assets/images/cap.PNG', // เปลี่ยนเป็น path ของไฟล์
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrl(Uri.parse(
-                              'https://www.youtube.com/watch?v=JTUcb7CNP60'));
-                        },
-                        child: Text(
-                          'ดูวิดีโอ',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.blue,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),*/
+              SizedBox(height: 60),
+            ],
+          ),
+        ),
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 30), // ปรับระยะห่างจากขอบล่าง
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  // ใส่การทำงานที่ต้องการเมื่อกดปุ่ม "อัปเดต"
+                  print("อัปเดต");
+                },
+                child: Icon(Icons.refresh),
+                backgroundColor: Colors.orange,
+              ),
+              SizedBox(width: 16), // ช่องว่างระหว่างปุ่ม
+              FloatingActionButton(
+                onPressed: () {
+                  // ใส่การทำงานที่ต้องการเมื่อกดปุ่ม "แจ้งชำรุด"
+                  print("แจ้งชำรุด");
+                },
+                child: Icon(Icons.report_problem),
+                backgroundColor: Colors.red,
+              ),
+              SizedBox(width: 16), // ช่องว่างระหว่างปุ่ม
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DashboardTechPage()),
+                  );
+                },
+                child: Icon(Icons.map),
+                backgroundColor: Colors.blue,
+              ),
             ],
           ),
         ),
