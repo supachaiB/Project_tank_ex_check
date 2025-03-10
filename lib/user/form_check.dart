@@ -5,6 +5,7 @@ import 'firetank_details.dart'; // นำเข้าไฟล์ที่แส
 import 'dart:convert'; // สำหรับการแปลง Base64
 import 'dart:typed_data'; // สำหรับ Uint8List
 //import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FormCheckPage extends StatefulWidget {
   final String tankId;
@@ -42,6 +43,11 @@ class _FormCheckPageState extends State<FormCheckPage> {
         DateFormat('HH:mm').format(DateTime.now()); // เวลาปัจจุบัน
     fetchLatestCheckDate(); // ดึงข้อมูลวันที่ล่าสุด
     fetchFireTankType(); // ดึงข้อมูล type ของ firetank_Collection
+  }
+
+  void _logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut(); // ออกจากระบบ Firebase
+    Navigator.pushReplacementNamed(context, '/login'); // กลับไปหน้า Login
   }
 
   // ฟังก์ชันดึงข้อมูล type และภาพ Base64 จาก Firestore
@@ -336,6 +342,12 @@ class _FormCheckPageState extends State<FormCheckPage> {
             style: TextStyle(fontSize: fontSize * 1.2),
           ),
           automaticallyImplyLeading: false, // ไม่แสดงลูกศรด้านซ้าย
+          actions: [
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () => _logout(context),
+            ),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -437,6 +449,9 @@ class _FormCheckPageState extends State<FormCheckPage> {
                             Color getStatusColor(String status) {
                               if (status == 'ชำรุด') return Colors.red;
                               if (status == 'ส่งซ่อม') return Colors.orange;
+                              if (status == 'แจ้งซ่อมแล้ว')
+                                return Colors.orange;
+
                               if (status == 'ยังไม่ตรวจสอบ') return Colors.grey;
 
                               return Colors.green;
@@ -944,13 +959,6 @@ class _FormCheckPageState extends State<FormCheckPage> {
                             value: 'ผู้ใช้ทั่วไป',
                             child: Text(
                               'ผู้ใช้ทั่วไป',
-                              style: TextStyle(fontSize: fontSize),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: 'ช่างเทคนิค',
-                            child: Text(
-                              'ช่างเทคนิค',
                               style: TextStyle(fontSize: fontSize),
                             ),
                           ),

@@ -445,6 +445,9 @@ Widget _buildDrawer(BuildContext context) {
         ListTile(
           leading: const Icon(Icons.manage_accounts), // จัดการผู้ใช้งาน
           title: const Text('จัดการผู้ใช้งาน'),
+          onTap: () {
+            Navigator.pushNamed(context, '/user_management');
+          },
         ),
         ListTile(
           leading: const Icon(Icons.build), // จัดการถังดับเพลิง
@@ -467,12 +470,6 @@ Widget _buildDrawer(BuildContext context) {
             Navigator.pushNamed(context, '/FireTankTypes');
           },
         ),
-        ListTile(
-            leading: const Icon(Icons.settings), // ตั้งค่า
-            title: const Text('ตั้งค่า'),
-            onTap: () {
-              Navigator.pushNamed(context, '/Settings');
-            }),
         ListTile(
           leading: const Icon(Icons.logout), // ออกจากระบบ
           title: const Text('ออกจากระบบ'),

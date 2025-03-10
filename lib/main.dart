@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 // นำเข้าหน้าต่าง ๆ ที่ต้องใช้
@@ -17,6 +18,7 @@ import 'admin/admin_damage.dart';
 import 'technician/form_tech.dart';
 import 'technician/dashboardTech.dart';
 import 'Account/signin.dart';
+import 'admin/user_management.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,7 +76,7 @@ Route<dynamic> _generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => FireTankStatusPage());
 
     case '/inspectionhistory':
-      return MaterialPageRoute(builder: (context) => InspectionHistoryPage());
+      return MaterialPageRoute(builder: (context) => InspectionOverviewPage());
 
     case '/fire_tank_management':
       return MaterialPageRoute(builder: (context) => FireTankManagementPage());
@@ -88,7 +90,8 @@ Route<dynamic> _generateRoute(RouteSettings settings) {
 
     case '/FireTankStatusPage':
       return MaterialPageRoute(builder: (context) => FireTankStatusPage());
-
+    case '/user_management':
+      return MaterialPageRoute(builder: (context) => UserManagementPage());
     case '/AdminReport':
       return MaterialPageRoute(builder: (context) => AdminReportPage());
 
@@ -113,10 +116,31 @@ Route<dynamic> _handleTankIdRoute(
 void _handleLoginSuccess(BuildContext context, User user) async {
   final userDoc =
       await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+
   if (userDoc.exists) {
     final role = userDoc.data()?['role'] ?? '';
+
+    // ✅ ดึงอีเมลจาก Firebase Authentication
+    final email = user.email ?? '';
+
+    // ✅ ดึงค่า tankId จาก URL (กรณีเปิดผ่านเว็บ)
+    final uri = Uri.base;
+    final tankId = uri.queryParameters['tankId'];
+
+    // ✅ บันทึกข้อมูลล็อกอินลง SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('saved_email', email);
+    await prefs.setBool('remember_me', true);
+
+    // ❌ ไม่สามารถเข้าถึงรหัสผ่านจาก FirebaseAuth ดังนั้นเราจะเก็บเฉพาะอีเมล
+
+    // ✅ นำทางไปยังหน้าที่เหมาะสม
     if (role == 'technician') {
-      Navigator.pushReplacementNamed(context, '/dashboardTech');
+      Navigator.pushReplacementNamed(
+          context, tankId != null ? '/Tech?tankId=$tankId' : '/Tech');
+    } else if (role == 'user') {
+      Navigator.pushReplacementNamed(
+          context, tankId != null ? '/user?tankId=$tankId' : '/user');
     } else if (role == 'admin') {
       Navigator.pushReplacementNamed(context, '/admin');
     } else {
