@@ -161,18 +161,18 @@ class _DashboardPageState extends State<DashboardPage> {
                             FireTankBox(totalTanks: totalTanks),
                             const SizedBox(height: 16),
                             InspectionStatusBox(
-                              checkedCount: checkedCount,
-                              uncheckedCount: uncheckedCount,
-                              brokenCount: brokenCount,
-                              repairCount: repairCount,
-                            ),
+                                checkedCount: checkedCount,
+                                uncheckedCount: uncheckedCount,
+                                brokenCount: brokenCount,
+                                repairCount: repairCount,
+                                totalTanks: totalTanks),
                             const SizedBox(height: 16),
                             TechnicianStatusBox(
-                              checkedCount: checkedTechnicianCount,
-                              uncheckedCount: uncheckedTechnicianCount,
-                              brokenCount: brokenTechnicianCount,
-                              repairCount: repairTechnicianCount,
-                            ),
+                                checkedCount: checkedTechnicianCount,
+                                uncheckedCount: uncheckedTechnicianCount,
+                                brokenCount: brokenTechnicianCount,
+                                repairCount: repairTechnicianCount,
+                                totalTanks: totalTanks),
                           ],
                         );
                       } else {
@@ -184,19 +184,19 @@ class _DashboardPageState extends State<DashboardPage> {
                             const SizedBox(width: 16),
                             Expanded(
                                 child: InspectionStatusBox(
-                              checkedCount: checkedCount,
-                              uncheckedCount: uncheckedCount,
-                              brokenCount: brokenCount,
-                              repairCount: repairCount,
-                            )),
+                                    checkedCount: checkedCount,
+                                    uncheckedCount: uncheckedCount,
+                                    brokenCount: brokenCount,
+                                    repairCount: repairCount,
+                                    totalTanks: totalTanks)),
                             const SizedBox(width: 16),
                             Expanded(
                                 child: TechnicianStatusBox(
-                              checkedCount: checkedTechnicianCount,
-                              uncheckedCount: uncheckedTechnicianCount,
-                              brokenCount: brokenTechnicianCount,
-                              repairCount: repairTechnicianCount,
-                            )),
+                                    checkedCount: checkedTechnicianCount,
+                                    uncheckedCount: uncheckedTechnicianCount,
+                                    brokenCount: brokenTechnicianCount,
+                                    repairCount: repairTechnicianCount,
+                                    totalTanks: totalTanks)),
                           ],
                         );
                       }

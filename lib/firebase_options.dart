@@ -46,7 +46,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1084138640762',
     projectId: 'fire-check-db',
     authDomain: 'fire-check-db.firebaseapp.com',
-    storageBucket: 'fire-check-db.appspot.com',
+    databaseURL: 'https://fire-check-db-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'fire-check-db.firebasestorage.app',
     measurementId: 'G-NZ48SL4SB9',
   );
 
@@ -55,7 +56,8 @@ class DefaultFirebaseOptions {
     appId: '1:1084138640762:android:57bb89bc2ecdcf061a72c3',
     messagingSenderId: '1084138640762',
     projectId: 'fire-check-db',
-    storageBucket: 'fire-check-db.appspot.com',
+    databaseURL: 'https://fire-check-db-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'fire-check-db.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -63,7 +65,8 @@ class DefaultFirebaseOptions {
     appId: '1:1084138640762:ios:53bf5b2a449a52601a72c3',
     messagingSenderId: '1084138640762',
     projectId: 'fire-check-db',
-    storageBucket: 'fire-check-db.appspot.com',
+    databaseURL: 'https://fire-check-db-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'fire-check-db.firebasestorage.app',
     iosBundleId: 'com.example.firecheckSetup',
   );
 
@@ -72,7 +75,8 @@ class DefaultFirebaseOptions {
     appId: '1:1084138640762:ios:53bf5b2a449a52601a72c3',
     messagingSenderId: '1084138640762',
     projectId: 'fire-check-db',
-    storageBucket: 'fire-check-db.appspot.com',
+    databaseURL: 'https://fire-check-db-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'fire-check-db.firebasestorage.app',
     iosBundleId: 'com.example.firecheckSetup',
   );
 
@@ -82,7 +86,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1084138640762',
     projectId: 'fire-check-db',
     authDomain: 'fire-check-db.firebaseapp.com',
-    storageBucket: 'fire-check-db.appspot.com',
+    databaseURL: 'https://fire-check-db-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'fire-check-db.firebasestorage.app',
     measurementId: 'G-GFYMP49EYF',
   );
 

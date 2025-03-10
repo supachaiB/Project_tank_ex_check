@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firecheck_setup/admin/dashboard.dart';
 
 class InspectionStatusBox extends StatelessWidget {
-  final int checkedCount, uncheckedCount, brokenCount, repairCount;
+  final int checkedCount, uncheckedCount, brokenCount, repairCount, totalTanks;
   const InspectionStatusBox({
     Key? key,
     required this.checkedCount,
     required this.uncheckedCount,
     required this.brokenCount,
     required this.repairCount,
+    required this.totalTanks,
   }) : super(key: key);
 
   @override
@@ -18,31 +19,29 @@ class InspectionStatusBox extends StatelessWidget {
       padding: const EdgeInsets.all(12.0),
       decoration: boxDecorationStyle(),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 10),
-          const Text('การตรวจสอบผู้ใช้ทั่วไปในเดือนนี้ ',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          buildStatusRow('ตรวจสอบแล้ว', checkedCount, Colors.green),
-          buildStatusRow('ยังไม่ตรวจสอบ', uncheckedCount, Colors.grey),
-          buildStatusRow('ชำรุด', brokenCount, Colors.red),
-          buildStatusRow('ส่งซ่อม', repairCount, Colors.orange),
+          const Text(
+            'การตรวจสอบผู้ใช้ทั่วไปในเดือนนี้',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '$checkedCount / $totalTanks',
+                style: const TextStyle(
+                  fontSize: 24, // ขยายขนาดตัวเลข
+                  fontWeight: FontWeight.bold, // ทำให้ตัวเข้มขึ้น
+                ),
+              ),
+            ],
+          ),
         ],
       ),
-    );
-  }
-
-  Widget buildStatusRow(String label, int count, Color color) {
-    return Row(
-      children: [
-        Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-        const SizedBox(width: 5),
-        Text('$label: $count'),
-      ],
     );
   }
 }

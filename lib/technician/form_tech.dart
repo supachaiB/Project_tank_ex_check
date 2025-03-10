@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // สำหรับฟอร์แมตวันที่
 import 'package:cloud_firestore/cloud_firestore.dart'; // สำหรับ Firestore
-//import 'firetank_details.dart'; // นำเข้าไฟล์ที่แสดงประวัติการตรวจสอบ
 import 'dart:convert'; // สำหรับการแปลง Base64
 import 'dart:typed_data'; // สำหรับ Uint8List
 //import 'package:url_launcher/url_launcher.dart';
 import 'dashboardTech.dart';
+import 'package:firecheck_setup/user/firetank_details.dart';
 
 class FormTechCheckPage extends StatefulWidget {
   final String tankId;
@@ -309,6 +309,22 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+
+// หาวันสุดท้ายของไตรมาสปัจจุบัน
+    int currentQuarter =
+        ((now.month - 1) ~/ 3) + 1; // หาว่าอยู่ไตรมาสที่เท่าไหร่
+    int quarterEndMonth = currentQuarter * 3; // เดือนสุดท้ายของไตรมาส
+    DateTime endOfQuarter =
+        DateTime(now.year, quarterEndMonth + 1, 0); // วันสุดท้ายของไตรมาส
+
+// คำนวณจำนวนวันจนถึงไตรมาสถัดไป
+    int remainingDays = endOfQuarter.difference(now).inDays;
+
+// ถ้าเหลือ 0 วัน ให้รีเซ็ตเป็น 1 เพื่อป้องกันแสดงค่าผิด
+    if (remainingDays < 0) {
+      remainingDays = 0;
+    }
     final double fontSize = MediaQuery.of(context).size.width < 600
         ? 14
         : 16; // ปรับขนาดฟอนต์ตามขนาดหน้าจอ
@@ -348,12 +364,12 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
                         stream: FirebaseFirestore.instance
                             .collection('form_checks')
                             .where('tank_id', isEqualTo: widget.tankId)
+                            .where('user_type',
+                                isEqualTo: 'ช่างเทคนิค') // แสดงเฉพาะช่างเทคนิค
                             .orderBy('date_checked', descending: true)
-                            .orderBy('time_checked',
-                                descending:
-                                    true) // อ้างอิงจากเวลาเพื่อให้ได้ข้อมูลล่าสุด
+                            .orderBy('time_checked', descending: true)
                             .limit(1)
-                            .snapshots(), // ใช้ snapshots() เพื่ออัปเดตข้อมูลแบบเรียลไทม์
+                            .snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -393,6 +409,11 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
                         },
                       ),
                       const SizedBox(height: 8),
+                      Text(
+                        'การตรวจรอบใหม่อีก: $remainingDays วัน',
+                        style: TextStyle(fontSize: fontSize),
+                      ),
+                      const SizedBox(height: 8),
                       StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('firetank_Collection')
@@ -419,36 +440,36 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
                               snapshot.data!.docs.isNotEmpty) {
                             final latestStatus = snapshot.data!.docs.first
                                 .data() as Map<String, dynamic>;
-                            final userStatus =
-                                latestStatus['status'] ?? 'ไม่มีข้อมูล';
+                            final techStatus =
+                                latestStatus['status_technician'] ??
+                                    'ไม่มีข้อมูล';
 
                             // สร้างฟังก์ชันเพื่อกำหนดสีตามสถานะ
                             Color getStatusColor(String status) {
                               if (status == 'ชำรุด') return Colors.red;
                               if (status == 'ส่งซ่อม') return Colors.orange;
                               if (status == 'ยังไม่ตรวจสอบ') return Colors.grey;
-
                               return Colors.green;
                             }
 
                             return Row(
                               children: [
                                 Text(
-                                  'สถานะล่าสุด: ',
+                                  'สถานะล่าสุด : ',
                                   style: TextStyle(fontSize: fontSize),
                                 ),
                                 Icon(
                                   Icons.circle,
-                                  color: getStatusColor(userStatus),
+                                  color: getStatusColor(techStatus),
                                   size: 12,
                                 ),
                                 SizedBox(width: 8),
-                                Text(userStatus,
+                                Text(techStatus,
                                     style: TextStyle(fontSize: fontSize)),
                                 Expanded(
                                     child:
                                         Container()), // พื้นที่ว่างให้ปุ่มอยู่ขวาสุด
-                                /*TextButton(
+                                TextButton(
                                   onPressed: () {
                                     Navigator.push(
                                       context,
@@ -464,7 +485,7 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
                                     'ดูทั้งหมด',
                                     style: TextStyle(fontSize: fontSize),
                                   ),
-                                ),*/
+                                ),
                               ],
                             );
                           } else {

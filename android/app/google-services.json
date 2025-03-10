@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "1084138640762",
+    "firebase_url": "https://fire-check-db-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "fire-check-db",
-    "storage_bucket": "fire-check-db.appspot.com"
+    "storage_bucket": "fire-check-db.firebasestorage.app"
   },
   "client": [
     {

@@ -316,6 +316,13 @@ class _FormCheckPageState extends State<FormCheckPage> {
         : const EdgeInsets.symmetric(
             vertical: 8.0); // ปรับระยะห่างตามขนาดหน้าจอ
 
+    DateTime now = DateTime.now();
+
+    // หาวันสุดท้ายของเดือนปัจจุบัน (สิ้นเดือน)
+    DateTime endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+    Duration remainingTime =
+        endOfMonth.difference(now); // เวลาที่เหลือจนถึงสิ้นเดือน
+
     return WillPopScope(
       onWillPop: () async {
         // สามารถเพิ่มเงื่อนไขในการจัดการการย้อนกลับได้ เช่นป้องกันไม่ให้ย้อนกลับ
@@ -390,6 +397,11 @@ class _FormCheckPageState extends State<FormCheckPage> {
                             );
                           }
                         },
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'การตรวจรอบใหม่อีก: ${remainingTime.inDays} วัน',
+                        style: TextStyle(fontSize: fontSize),
                       ),
                       const SizedBox(height: 8),
                       StreamBuilder<QuerySnapshot>(

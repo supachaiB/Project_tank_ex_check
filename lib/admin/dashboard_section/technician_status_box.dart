@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'inspection_status_box.dart';
 
 class TechnicianStatusBox extends StatelessWidget {
-  final int checkedCount, uncheckedCount, brokenCount, repairCount;
+  final int checkedCount, uncheckedCount, brokenCount, repairCount, totalTanks;
   const TechnicianStatusBox({
     Key? key,
     required this.checkedCount,
     required this.uncheckedCount,
     required this.brokenCount,
     required this.repairCount,
+    required this.totalTanks,
   }) : super(key: key);
 
   @override
@@ -18,6 +19,7 @@ class TechnicianStatusBox extends StatelessWidget {
       uncheckedCount: uncheckedCount,
       brokenCount: brokenCount,
       repairCount: repairCount,
+      totalTanks: totalTanks,
     );
   }
 }
