@@ -5,17 +5,13 @@ class Box1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
       elevation: 5,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'เริ่มการตรวจใหม่ในอีก 30 วัน',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
             // ใช้ StreamBuilder เพื่อดึงข้อมูลจำนวนเอกสารทั้งหมดจาก Firestore
             StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance

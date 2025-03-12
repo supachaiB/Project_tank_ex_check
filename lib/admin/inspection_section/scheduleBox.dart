@@ -53,12 +53,12 @@ class ScheduleBox extends StatelessWidget {
                 SizedBox(height: 2),
                 // แสดงเวลาเหลือของผู้ใช้ทั่วไป
                 Text(
-                  "ผู้ใช้ทั่วไปเหลือ :  ${remainingTime.inDays} วัน ${remainingTime.inHours % 24} ชั่วโมง",
+                  "ผู้ใช้ทั่วไปเริ่มตรวจรอบถัดไปอีก :  ${remainingTime.inDays} วัน ${remainingTime.inHours % 24} ชั่วโมง",
                   style: TextStyle(fontSize: 14),
                 ),
                 // แสดงเวลาเหลือของช่างเทคนิค
                 Text(
-                  "ช่างเทคนิคเหลือ : ${remainingQuarterTime.inDays} วัน ${remainingQuarterTime.inHours % 24} ชั่วโมง",
+                  "ช่างเทคนิคเริ่มตรวจรอบถัดไปอีก : ${remainingQuarterTime.inDays} วัน ${remainingQuarterTime.inHours % 24} ชั่วโมง",
                   style: TextStyle(fontSize: 14),
                 ),
               ],

@@ -169,8 +169,37 @@ class _AdminReportPageState extends State<AdminReportPage> {
   void _assignTechnician(Map<String, dynamic> data) async {
     try {
       String tankId = data['tank_id']?.toString() ?? "ไม่ทราบ";
-      String inspector =
-          data['inspector']?.toString() ?? "ไม่ระบุ"; // ✅ ป้องกัน null
+      String inspector = "ไม่ระบุ"; // ค่าเริ่มต้น
+      String remarks = "ไม่มีหมายเหตุ"; // ค่าเริ่มต้น
+      Map<String, dynamic> damagedParts = {};
+
+      // ✅ ดึง `form_checks` เพื่อนำค่า `inspector`, `remarks`, และ `equipment_status`
+      QuerySnapshot formQuery = await FirebaseFirestore.instance
+          .collection('form_checks')
+          .where('tank_id', isEqualTo: tankId)
+          .orderBy('date_checked', descending: true)
+          .orderBy('time_checked', descending: true)
+          .limit(1)
+          .get();
+
+      if (formQuery.docs.isNotEmpty) {
+        Map<String, dynamic> formData =
+            formQuery.docs.first.data() as Map<String, dynamic>;
+
+        // ✅ ใช้ค่าจาก `form_checks` ถ้ามีข้อมูล
+        inspector = formData['inspector']?.toString() ?? inspector;
+        remarks = formData['remarks']?.toString() ?? remarks;
+
+        // ✅ ดึง `equipment_status` และหาอุปกรณ์ที่ชำรุด
+        Map<String, dynamic> equipmentStatus =
+            (formData['equipment_status'] as Map<String, dynamic>?) ?? {};
+        damagedParts = equipmentStatus.entries
+            .where((entry) => entry.value == 'ชำรุด')
+            .fold<Map<String, dynamic>>({}, (map, entry) {
+          map[entry.key] = entry.value;
+          return map;
+        });
+      }
 
       // ✅ ดึงข้อมูล `firetank_Collection` เพื่ออัปเดตสถานะ
       QuerySnapshot firetankQuery = await FirebaseFirestore.instance
@@ -186,41 +215,6 @@ class _AdminReportPageState extends State<AdminReportPage> {
       // ✅ ได้ Document ID ที่แท้จริงของ `firetank_Collection`
       String docId = firetankQuery.docs.first.id;
 
-      // ✅ ดึง `equipment_status` จาก `form_checks`
-      Map<String, dynamic> damagedParts = {};
-      QuerySnapshot formQuery = await FirebaseFirestore.instance
-          .collection('form_checks')
-          .where('tank_id', isEqualTo: tankId)
-          .limit(1)
-          .get();
-
-      if (formQuery.docs.isNotEmpty) {
-        Map<String, dynamic> formData =
-            formQuery.docs.first.data() as Map<String, dynamic>;
-        Map<String, dynamic> equipmentStatus =
-            (formData['equipment_status'] as Map<String, dynamic>?) ?? {};
-        damagedParts = equipmentStatus.entries
-            .where(
-                (entry) => entry.value == 'ชำรุด') // ✅ คัดเฉพาะที่เป็น "ชำรุด"
-            .fold<Map<String, dynamic>>({}, (map, entry) {
-          map[entry.key] = entry.value;
-          return map;
-        });
-      }
-
-      // ✅ ดึง `user_type` จาก `users` collection
-      String userType = "ผู้ดูแลระบบ"; // ค่าเริ่มต้น
-      QuerySnapshot userQuery = await FirebaseFirestore.instance
-          .collection('users')
-          .where('name', isEqualTo: inspector)
-          .limit(1)
-          .get();
-
-      if (userQuery.docs.isNotEmpty) {
-        userType =
-            userQuery.docs.first.get('user_type')?.toString() ?? "ไม่ทราบ";
-      }
-
       // ✅ บันทึกข้อมูลไปยัง `technician_requests`
       await FirebaseFirestore.instance
           .collection('technician_requests')
@@ -230,10 +224,9 @@ class _AdminReportPageState extends State<AdminReportPage> {
         'building': data['building']?.toString() ?? "ไม่ทราบ",
         'floor': data['floor']?.toString() ?? "ไม่ระบุ",
         'type': data['type']?.toString() ?? "ไม่ระบุ",
-        'remarks': data['remarks']?.toString() ?? "ไม่มีหมายเหตุ",
+        'remarks': remarks, // ✅ ใช้ค่าจาก `form_checks`
         'status': 'แจ้งซ่อมแล้ว',
-        'inspector': inspector,
-        'user_type': userType, // ✅ ป้องกัน null
+        'inspector': inspector, // ✅ ใช้ค่าจาก `form_checks`
         'damaged_parts': damagedParts, // ✅ บันทึกเฉพาะที่เป็น "ชำรุด"
         'timestamp': FieldValue.serverTimestamp(),
       });
@@ -248,7 +241,7 @@ class _AdminReportPageState extends State<AdminReportPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              'แจ้งซ่อมสำเร็จ! ส่วนที่ชำรุด: ${damagedParts.keys.join(", ")}'),
+              'แจ้งซ่อมสำเร็จ! ผู้ตรวจสอบ: $inspector หมายเหตุ: $remarks ส่วนที่ชำรุด: ${damagedParts.keys.join(", ")}'),
         ),
       );
 

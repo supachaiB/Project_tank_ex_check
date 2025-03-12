@@ -3,6 +3,7 @@ import 'inspection_status_box.dart';
 
 class TechnicianStatusBox extends StatelessWidget {
   final int checkedCount, uncheckedCount, brokenCount, repairCount, totalTanks;
+
   const TechnicianStatusBox({
     Key? key,
     required this.checkedCount,
@@ -15,6 +16,7 @@ class TechnicianStatusBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InspectionStatusBox(
+      title: 'การตรวจสอบของช่างเทคนิคไตรมาสนี้', // ส่งค่าชื่อที่ต้องการ
       checkedCount: checkedCount,
       uncheckedCount: uncheckedCount,
       brokenCount: brokenCount,

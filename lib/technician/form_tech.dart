@@ -1,3 +1,6 @@
+import 'package:firecheck_setup/technician/RequestTankChangePage.dart';
+import 'package:firecheck_setup/technician/TechnicianRequestsPage.dart';
+import 'package:firecheck_setup/technician/fetch_tank_request.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // สำหรับฟอร์แมตวันที่
 import 'package:cloud_firestore/cloud_firestore.dart'; // สำหรับ Firestore
@@ -6,7 +9,6 @@ import 'dart:typed_data'; // สำหรับ Uint8List
 //import 'package:url_launcher/url_launcher.dart';
 import 'dashboardTech.dart';
 import 'package:firecheck_setup/user/firetank_details.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class FormTechCheckPage extends StatefulWidget {
   final String tankId;
@@ -44,11 +46,6 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
         DateFormat('HH:mm').format(DateTime.now()); // เวลาปัจจุบัน
     fetchLatestCheckDate(); // ดึงข้อมูลวันที่ล่าสุด
     fetchFireTankType(); // ดึงข้อมูล type ของ firetank_Collection
-  }
-
-  void _logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut(); // ออกจากระบบ Firebase
-    Navigator.pushReplacementNamed(context, '/login'); // กลับไปหน้า Login
   }
 
   // ฟังก์ชันดึงข้อมูล type และภาพ Base64 จาก Firestore
@@ -317,20 +314,19 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
 
-    // หาวันสุดท้ายของไตรมาส (3 เดือน)
-    int quarterEndMonth =
-        ((now.month - 1) ~/ 3 + 1) * 3; // เดือนสุดท้ายของไตรมาส
-    DateTime endOfQuarter = DateTime(
-        now.year, quarterEndMonth + 1, 0, 23, 59, 59); // วันที่สุดท้ายของไตรมาส
-    Duration remainingQuarterTime =
-        endOfQuarter.difference(now); // เวลาที่เหลือจนถึงสิ้นไตรมาส
+// หาวันสุดท้ายของไตรมาสปัจจุบัน
+    int currentQuarter =
+        ((now.month - 1) ~/ 3) + 1; // หาว่าอยู่ไตรมาสที่เท่าไหร่
+    int quarterEndMonth = currentQuarter * 3; // เดือนสุดท้ายของไตรมาส
+    DateTime endOfQuarter =
+        DateTime(now.year, quarterEndMonth + 1, 0); // วันสุดท้ายของไตรมาส
 
-    // คำนวณจำนวนวันจนถึงไตรมาสถัดไป
+// คำนวณจำนวนวันจนถึงไตรมาสถัดไป
     int remainingDays = endOfQuarter.difference(now).inDays;
 
-    // ถ้าเหลือ 0 วัน ให้รีเซ็ตเป็น 1 เพื่อป้องกันแสดงค่าผิด
+// ถ้าเหลือ 0 วัน ให้รีเซ็ตเป็น 1 เพื่อป้องกันแสดงค่าผิด
     if (remainingDays < 0) {
-      remainingDays = 1;
+      remainingDays = 0;
     }
     final double fontSize = MediaQuery.of(context).size.width < 600
         ? 14
@@ -353,12 +349,6 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
             style: TextStyle(fontSize: fontSize * 1.2),
           ),
           automaticallyImplyLeading: false, // ไม่แสดงลูกศรด้านซ้าย
-          actions: [
-            IconButton(
-              icon: Icon(Icons.logout),
-              onPressed: () => _logout(context),
-            ),
-          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -423,8 +413,53 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'การตรวจรอบใหม่อีก: ${remainingQuarterTime.inDays} วัน ',
+                        'การตรวจรอบใหม่อีก: $remainingDays วัน',
                         style: TextStyle(fontSize: fontSize),
+                      ),
+                      const SizedBox(height: 8),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('firetank_Collection')
+                            .where('tank_id', isEqualTo: widget.tankId)
+                            .limit(1)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text(
+                              'วันหมดอายุ: กำลังโหลด...',
+                              style: TextStyle(fontSize: fontSize),
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            return Text(
+                              'วันหมดอายุ: เกิดข้อผิดพลาด',
+                              style: TextStyle(fontSize: fontSize),
+                            );
+                          }
+
+                          if (snapshot.hasData &&
+                              snapshot.data!.docs.isNotEmpty) {
+                            var doc = snapshot.data!.docs.first;
+                            int expirationYear = doc[
+                                'expiration_years']; // Fetch expiration year
+
+                            return Row(
+                              children: [
+                                Text(
+                                  'วันหมดอายุ : $expirationYear',
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return Text(
+                              'วันหมดอายุ: ไม่มีข้อมูล',
+                              style: TextStyle(fontSize: fontSize),
+                            );
+                          }
+                        },
                       ),
                       const SizedBox(height: 8),
                       StreamBuilder<QuerySnapshot>(
@@ -461,9 +496,6 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
                             Color getStatusColor(String status) {
                               if (status == 'ชำรุด') return Colors.red;
                               if (status == 'ส่งซ่อม') return Colors.orange;
-                              if (status == 'แจ้งซ่อมแล้ว')
-                                return Colors.orange;
-
                               if (status == 'ยังไม่ตรวจสอบ') return Colors.grey;
                               return Colors.green;
                             }
@@ -546,9 +578,34 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
                 ),
 
               SizedBox(height: 20),
-              Text(
-                'Tank ID: ${widget.tankId}',
-                style: TextStyle(fontSize: fontSize),
+              Row(
+                children: [
+                  Text(
+                    'Tank ID: ${widget.tankId}',
+                    style: TextStyle(fontSize: fontSize),
+                  ),
+                  Spacer(), // ดันปุ่มไปขวาสุด
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RequestTankChangePage(
+                                tankId: widget.tankId)), // ใช้ tankId ที่มีอยู่
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // ทำมุมโค้งมน
+                      ),
+                    ),
+                    child: Text('ร้องขอเปลี่ยนถัง'),
+                  ),
+                ],
               ),
               Card(
                 color: Colors.white, // เพิ่มพื้นหลังเป็นสีขาว
@@ -967,6 +1024,13 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
                         value: userType,
                         items: [
                           DropdownMenuItem(
+                            value: 'ผู้ใช้ทั่วไป',
+                            child: Text(
+                              'ผู้ใช้ทั่วไป',
+                              style: TextStyle(fontSize: fontSize),
+                            ),
+                          ),
+                          DropdownMenuItem(
                             value: 'ช่างเทคนิค',
                             child: Text(
                               'ช่างเทคนิค',
@@ -1016,19 +1080,29 @@ class _FormTechCheckPageState extends State<FormTechCheckPage> {
             children: [
               FloatingActionButton(
                 onPressed: () {
-                  // ใส่การทำงานที่ต้องการเมื่อกดปุ่ม "อัปเดต"
-                  print("อัปเดต");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          TechnicianRequestsScreen(), // ไปที่หน้าแจ้งชำรุด
+                    ),
+                  );
                 },
-                child: Icon(Icons.refresh),
-                backgroundColor: Colors.orange,
+                child: const Icon(Icons.refresh),
+                backgroundColor: const Color.fromARGB(255, 223, 181, 11),
               ),
               SizedBox(width: 16), // ช่องว่างระหว่างปุ่ม
               FloatingActionButton(
                 onPressed: () {
-                  // ใส่การทำงานที่ต้องการเมื่อกดปุ่ม "แจ้งชำรุด"
-                  print("แจ้งชำรุด");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          TechnicianRequestsPage(), // ไปที่หน้าแจ้งชำรุด
+                    ),
+                  );
                 },
-                child: Icon(Icons.report_problem),
+                child: const Icon(Icons.report_problem),
                 backgroundColor: Colors.red,
               ),
               SizedBox(width: 16), // ช่องว่างระหว่างปุ่ม

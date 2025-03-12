@@ -9,6 +9,8 @@ import 'package:firecheck_setup/admin/dashboard_section/fire_tank_box.dart';
 import 'package:firecheck_setup/admin/dashboard_section/inspection_status_box.dart';
 import 'package:firecheck_setup/admin/dashboard_section/technician_status_box.dart';
 //import 'package:firecheck_setup/admin/dashboard_section/damage_info_section.dart';
+import 'package:firecheck_setup/admin/admin_approve_requests.dart';
+import 'package:firecheck_setup/admin/repair_updates.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -161,6 +163,9 @@ class _DashboardPageState extends State<DashboardPage> {
                             FireTankBox(totalTanks: totalTanks),
                             const SizedBox(height: 16),
                             InspectionStatusBox(
+                                title:
+                                    'การตรวจสอบผู้ใช้ทั่วไปในเดือนนี้', // ✅ เพิ่ม title ที่นี่
+
                                 checkedCount: checkedCount,
                                 uncheckedCount: uncheckedCount,
                                 brokenCount: brokenCount,
@@ -184,6 +189,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             const SizedBox(width: 16),
                             Expanded(
                                 child: InspectionStatusBox(
+                                    title: 'การตรวจสอบผู้ใช้ทั่วไปในเดือนนี้',
                                     checkedCount: checkedCount,
                                     uncheckedCount: uncheckedCount,
                                     brokenCount: brokenCount,
@@ -439,8 +445,27 @@ Widget _buildDrawer(BuildContext context) {
           },
         ),
         ListTile(
+          leading: const Icon(Icons.settings), // ตั้งค่า
+          title: const Text('คำร้องขอเปลี่ยนถัง'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      AdminApproveRequestsPage()), // ✅ เพิ่ม Navigator.push
+            );
+          },
+        ),
+        ListTile(
           leading: const Icon(Icons.update), // อัปเดตสถานะ
           title: const Text('การอัปเดตสถานะ'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const RepairUpdatesScreen()),
+            );
+          },
         ),
         ListTile(
           leading: const Icon(Icons.manage_accounts), // จัดการผู้ใช้งาน
